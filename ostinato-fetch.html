@@ -117,6 +117,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             var _options = Object.assign({
                 method: this.method,
                 redirect: 'follow',
+                credentials: 'same-origin'
             }, options);
 
             this._fetchDebounce = Polymer.Debouncer.debounce(
@@ -314,34 +315,3 @@ triggers. This will only handle triggers that is wrapped inside this element.
 
     window.customElements.define(OstinatoFetchTriggers.is, OstinatoFetchTriggers);
 </script>
-
-<!--
-<link rel="import" href="../polymer/polymer-element.html">
-
-<dom-module id="ostinato-fetch">
-  <template>
-    <style>
-      :host {
-        display: block;
-      }
-    </style>
-    <h2>Hello [[prop1]]!</h2>
-  </template>
-
-  <script>
-    class OstinatoFetch extends Polymer.Element {
-      static get is() { return 'ostinato-fetch'; }
-      static get properties() {
-        return {
-          prop1: {
-            type: String,
-            value: 'ostinato-fetch'
-          }
-        };
-      }
-    }
-
-    window.customElements.define(OstinatoFetch.is, OstinatoFetch);
-  </script>
-</dom-module>
--->
