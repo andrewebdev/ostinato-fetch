@@ -80,7 +80,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                  * If the requests being made is relative urls, then you need
                  * to specify what baseURL the fetched urld are relative to
                  */
-                baseUrl: String
+                baseUrl: {
+                    type: String,
+                    value: () => { return window.location.origin; }
+                }
             };
         }
 
