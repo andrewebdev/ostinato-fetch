@@ -76,12 +76,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                     value: false
                 },
 
-                baseUrl: {
-                    type: String,
-                    value: function() {
-                        return window.location.origin;
-                    }
-                }
+                /**
+                 * If the requests being made is relative urls, then you need
+                 * to specify what baseURL the fetched urld are relative to
+                 */
+                baseUrl: String
             };
         }
 
@@ -125,23 +124,26 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 Polymer.Async.microTask, () => {
                     this._url = new URL(url, this.baseUrl);
 
-                    fetch(url, _options)
-                        .then((resp) => {
-                            this.dispatchEvent(new CustomEvent('request-completed', {
-                                detail: { response: resp }
-                            }));
-                            return resp.text();
-                        })
-                        .then((text) => { this._updateContent(text); })
-                        .catch((err) => {
-                            this.dispatchEvent(new CustomEvent('error', {
-                                detail: err
-                            }));
-                        });
-
-                    this.dispatchEvent(new CustomEvent('request-started', {
-                        detail: {requestUrl: this._url}
-                    }))
+                    if (this._url.origin === window.location.origin) {
+                        fetch(url, _options)
+                            .then((resp) => {
+                                this.dispatchEvent(new CustomEvent('request-completed', {
+                                    detail: { response: resp }
+                                }));
+                                return resp.text();
+                            })
+                            .then((text) => { this._updateContent(text); })
+                            .catch((err) => {
+                                this.dispatchEvent(new CustomEvent('error', {
+                                    detail: err
+                                }));
+                            });
+                        this.dispatchEvent(new CustomEvent('request-started', {
+                            detail: {requestUrl: this._url}
+                        }))
+                    } else {
+                        throw "Ostinato-fetch is not allowed to make requests to another origin.";
+                    }
                 }
             );
         }
