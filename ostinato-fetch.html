@@ -22,6 +22,25 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 <link rel="import" href="../polymer/polymer-element.html">
 
 <script>
+    class OstinatoFetchError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = this.constructor.name;
+
+            if (typeof Error.captureStackTrace === 'function') {
+                Error.captureStackTrace(this, this.constructor);
+            } else {
+                this.stack = (new Error(message)).stack;
+            }
+        }
+    }
+
+    class InvalidOriginError extends OstinatoFetchError {
+        constructor() {
+            super("Ostinato-fetch is not allowed to make requests to another origin.");
+        }
+    }
+
     /**
     * `ostinato-fetch`
      * Fetch and replace html fragments
@@ -145,7 +164,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                             detail: {requestUrl: this._url}
                         }))
                     } else {
-                        throw "Ostinato-fetch is not allowed to make requests to another origin.";
+                        throw new InvalidOriginError();
                     }
                 }
             );
