@@ -66,22 +66,30 @@
 
             // Example of how events can be used to show loading
             // notifications etc.
-            xhr.addEventListener('request-started', function(ev) {
+            xhr.addEventListener('request-started', (ev) => {
               document.querySelector('#content').innerHTML = 'LOADING...';
-              console.log('Started...');
+              console.log('request started...');
+              console.log(ev.detail);
             });
 
-            xhr.addEventListener('request-completed', function(ev) {
-              console.log('Completed...');
+            xhr.addEventListener('request-completed', (ev) => {
+              console.log('request completed...');
+              console.log(ev.detail);
             });
 
-            xhr.addEventListener('content-updated', function(ev) {
-              var pageTitle = document.querySelector('#content > h3').innerText;
-              xhr.setContext(pageTitle);
+            xhr.addEventListener('content-updated', (ev) => {
+              console.log('content updated...');
+              console.log(ev.detail);
+            });
+
+            xhr.addEventListener('history-updated', (ev) => {
+              console.log('History updated...');
+              console.log(ev.detail);
             });
 
             xhr.addEventListener('error', function(ev) {
-              console.log(ev.detail.error);
+              console.log('error...');
+              console.log(ev.detail);
             });
           })();
         </script>

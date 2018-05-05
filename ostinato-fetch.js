@@ -152,7 +152,6 @@ class OstinatoFetch extends PolymerElement {
         if (this._url.origin === window.location.origin) {
           fetch(url, _options)
             .then((resp) => {
-              // Detect 404 and raise appropriate error here.
               this.dispatchEvent(new CustomEvent('request-completed', {
                 detail: { response: resp }
               }));
@@ -177,8 +176,11 @@ class OstinatoFetch extends PolymerElement {
       const doc = new DOMParser().parseFromString(content, "text/html");
       const targetSelectorList = this.targetSelectors.split(',');
       this._insertContent(doc, targetSelectorList);
-      this.dispatchEvent(new CustomEvent('content-updated'));
-    } // TODO: Replace with previous content?
+      this.dispatchEvent(new CustomEvent('content-updated', {
+        detail: { doc: doc }
+      }));
+      this._updateHistoryState(doc);
+    }
   }
 
   _insertContent(doc, targetSelectorList) {
@@ -189,55 +191,32 @@ class OstinatoFetch extends PolymerElement {
     });
   }
 
-  /**
-    * You should manually call this method when your want to update
-    * the browser history.
-    *
-    * The `context` object is optional and can be any javascript
-    * object or a DOM element.
-    *
-    * This context is then sent along to the `history-updated` and
-    * `context-attached` events, so that you can then use that to do
-    * any other tasks related to the page context.
-    */
-  /** TODO: Is this overly complicated? Can we simplify?
-    * Can we move some of thie in the fetch promises?
-    * Maybe some of the tasks here should be done with the
-    * request-completed event?
-    */
-  setContext(pageTitle, context) {
-    // Context is a js object with methods that can override
-    // defaults we have here to return
-    var url = new URL(this._url, this.baseUrl);
-
+  _updateHistoryState(doc) {
     if (this.updateHistory && this._url) {
-      var currentState = window.history.state;
-      var state = {
-        title: pageTitle,
+      let url = new URL(this._url, this.baseUrl);
+      let currentState = window.history.state;
+      let state = {
+        title: doc.title,
         url: url.pathname
       };
 
       // Only push the state if it actually changed
       if ((!currentState) || (state.url != window.history.state.url)) {
-        window.history.pushState(state, pageTitle, url.pathname);
+        window.history.pushState(state, state.title, url.pathname);
       }
 
-      // Due to a bug in many browsers, history api doesn't
+      // Due to a bug in some browsers, history api doesn't
       // always update the title.
-      // do so manually here till this is fixed in browsers.
-      document.title = pageTitle;
+      // Do so manually here till this is fixed in browsers.
+      document.title = state.title;
 
       this.dispatchEvent(new CustomEvent('history-updated', {
         detail: {
-          title: state.title,
           url: url,
-          context: context
+          state: state,
         }
       }));
     }
-    this.dispatchEvent(new CustomEvent('context-attached', {
-      detail: { context: context }
-    }));
   }
 }
 
