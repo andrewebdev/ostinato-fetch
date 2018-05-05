@@ -1,132 +1,128 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+  <title>ostinato-fetch demo</title>
 
-    <title>ostinato-fetch demo</title>
+  <script type="module" src="../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
+  <script type="module" src="../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
+  <script type="module" src="../ostinato-fetch.js"></script>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <custom-style>
+    <style is="custom-style" include="demo-pages-shared-styles">
+    </style>
+  </custom-style>
 
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-
-    <link rel="import" href="../ostinato-fetch.html">
-
-    <custom-style>
-      <style is="custom-style" include="demo-pages-shared-styles">
-      </style>
-    </custom-style>
-
-    <script>
-        function loadContent() {
-            var xhr = document.querySelector('#xhr');
-            xhr.fetch('/components/ostinato-fetch/demo/view1.html');
-        }
-    </script>
+  <script>
+    function loadContent() {
+      var xhr = document.querySelector('#xhr');
+      xhr.fetch('/components/ostinato-fetch/demo/view1.html');
+    }
+  </script>
 </head>
 
 <body>
-    <div class="vertical-section-container centered">
-        <h3>Basic ostinato-xhr usage</h3>
+  <div class="vertical-section-container centered">
+    <h3>Basic ostinato-xhr usage</h3>
 
-        <h4>ostinato-xhr-triggers</h4>
-        <p>Use <code>ostinato-xhr-triggers</code> to specify triggers for your
-        <code>ostinato-xhr</code> element.</p>
+    <h4>ostinato-xhr-triggers</h4>
+    <p>Use <code>ostinato-xhr-triggers</code> to specify triggers for your
+    <code>ostinato-xhr</code> element.</p>
 
-        <demo-snippet>
-            <template>
-                <button onclick="loadContent()">Load Content manually (view1.html)</button>
+    <demo-snippet>
+      <template>
+        <button onclick="loadContent()">Load Content manually (view1.html)</button>
 
-                <hr>
+        <hr>
 
-                <a href="view1.html" xhr-link>Load view 1</a>
-                <a href="view2.html" xhr-link>Load view 2</a>
-                <a href="view3.html" xhr-link>Load view 3</a>
+        <a href="view1.html" xhr-link>Load view 1</a>
+        <a href="view2.html" xhr-link>Load view 2</a>
+        <a href="view3.html" xhr-link>Load view 3</a>
 
-                <a href="doesnotexist.html" xhr-link>Load non-existing</a>
+        <a href="doesnotexist.html" xhr-link>Load non-existing</a>
 
-                <hr>
+        <hr>
 
-                <ostinato-fetch
-                    id="xhr"
-                    target-selectors="#content"
-                    update-history>
-                </ostinato-fetch>
+        <ostinato-fetch
+          id="xhr"
+          target-selectors="#content"
+          update-history>
+        </ostinato-fetch>
 
-                <div id="content">
-                    <!-- content gets inserted here -->
-                </div>
+        <div id="content">
+          <!-- content gets inserted here -->
+        </div>
 
-                <ostinato-fetch-triggers
-                    id="basicTriggers"
-                    xhr-selector="#xhr">
-                </ostinato-fetch-triggers>
+        <ostinato-fetch-triggers
+          id="basicTriggers"
+          xhr-selector="#xhr">
+        </ostinato-fetch-triggers>
 
-                <script>
-                    (function() {
-                        var xhr = document.querySelector('#xhr');
+        <script>
+          (function() {
+            var xhr = document.querySelector('#xhr');
 
-                        // Example of how events can be used to show loading
-                        // notifications etc.
-                        xhr.addEventListener('request-started', function(ev) {
-                            document.querySelector('#content').innerHTML = 'LOADING...';
-                            console.log('Started...');
-                        });
+            // Example of how events can be used to show loading
+            // notifications etc.
+            xhr.addEventListener('request-started', function(ev) {
+              document.querySelector('#content').innerHTML = 'LOADING...';
+              console.log('Started...');
+            });
 
-                        xhr.addEventListener('request-completed', function(ev) {
-                            console.log('Completed...');
-                        });
+            xhr.addEventListener('request-completed', function(ev) {
+              console.log('Completed...');
+            });
 
-                        xhr.addEventListener('content-updated', function(ev) {
-                            var pageTitle = document.querySelector('#content > h3').innerText;
-                            xhr.setContext(pageTitle);
-                        });
+            xhr.addEventListener('content-updated', function(ev) {
+              var pageTitle = document.querySelector('#content > h3').innerText;
+              xhr.setContext(pageTitle);
+            });
 
-                        xhr.addEventListener('error', function(ev) {
-                            console.log(ev.detail.error);
-                        });
-                    })();
-                </script>
-            </template>
-        </demo-snippet>
-    </div>
+            xhr.addEventListener('error', function(ev) {
+              console.log(ev.detail.error);
+            });
+          })();
+        </script>
+      </template>
+    </demo-snippet>
+  </div>
 
-    <div class="vertical-section-container centered">
-        <h3>Update multiple containers</h3>
-        <p>In this example, the document being loaded, <code>multiview.html</code>,
-        has a lot of content. But <code>ostinato-xhr</code> will only pull out the content
-        that we specify. In this case it's just a header and content</p>
+  <div class="vertical-section-container centered">
+    <h3>Update multiple containers</h3>
+    <p>In this example, the document being loaded, <code>multiview.html</code>,
+    has a lot of content. But <code>ostinato-xhr</code> will only pull out the content
+    that we specify. In this case it's just a header and content</p>
 
-        <demo-snippet>
-            <template>
-                <a href="multiview.html" xhr-multi>Load content</a>
+    <demo-snippet>
+      <template>
+        <a href="multiview.html" xhr-multi>Load content</a>
 
-                <ostinato-fetch
-                    id="xhrMultiple"
-                    target-selectors="#multiHeader,#multiContent">
-                </ostinato-fetch>
+        <ostinato-fetch
+          id="xhrMultiple"
+          target-selectors="#multiHeader,#multiContent">
+        </ostinato-fetch>
 
-                <div id="multiple">
-                    <div id="multiHeader">
-                        <p>This is a header container</p>
-                    </div>
+        <div id="multiple">
+          <div id="multiHeader">
+            <p>This is a header container</p>
+          </div>
 
-                    <p style="font-weight: bold; color: red;">Some content that should not be updated.</p>
+          <p style="font-weight: bold; color: red;">Some content that should not be updated.</p>
 
-                    <div id="multiContent">
-                        <p>This is a content container</p>
-                    </div>
-                </div>
+          <div id="multiContent">
+            <p>This is a content container</p>
+          </div>
+        </div>
 
-                <ostinato-fetch-triggers
-                    id="multiTriggers"
-                    xhr-selector="#xhrMultiple"
-                    trigger-selector="[xhr-multi]">
-                </ostinato-fetch-triggers>
-            </template>
-        </demo-snippet>
-    </div>
+        <ostinato-fetch-triggers
+          id="multiTriggers"
+          xhr-selector="#xhrMultiple"
+          trigger-selector="[xhr-multi]">
+        </ostinato-fetch-triggers>
+      </template>
+    </demo-snippet>
+  </div>
 </body>
 </html>
