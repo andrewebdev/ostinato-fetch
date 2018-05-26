@@ -144,6 +144,14 @@ class OstinatoFetch extends PolymerElement {
       credentials: 'same-origin',
     }, options);
 
+    if (_options.queryParams) {
+      const esc = encodeURIComponent;
+      url += (url.indexOf('?') === -1 ? '?' : '&') + Object.keys(_options.queryParams)
+        .map(k => esc(k) + '=' + esc(_options.queryParams[k]))
+        .join('&');
+      delete _options.queryParams;
+    }
+
     this._fetchDebounce = Debouncer.debounce(
       this._fetchDebounce,
       Async.microTask, () => {
