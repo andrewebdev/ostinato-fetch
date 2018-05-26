@@ -81,15 +81,6 @@ class OstinatoFetch extends PolymerElement {
       },
 
       /**
-      * Set to true if you don't want to run any imports that the
-      * new content might have in <head>
-      */
-      skipImports: {
-        type: Boolean,
-        value: false
-      },
-
-      /**
       * Whether or not to update the browser history when this
       * component is used.
       */
