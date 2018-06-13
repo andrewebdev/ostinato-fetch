@@ -184,9 +184,23 @@ class OstinatoFetch extends PolymerElement {
 
   _insertContent(doc, targetSelectorList) {
     targetSelectorList.forEach((targetSelector) => {
-      var target = document.querySelector(targetSelector);
       var content = doc.querySelector(targetSelector);
-      if (content) { target.innerHTML = content.innerHTML; }
+      var target = document.querySelector(targetSelector);
+
+      // First empty the target container properly
+      while (target.hasChildNodes()) { target.removeChild(target.lastChild); }
+
+      // Now insert content elements
+      // If any immediate child elements is a script module, we will import it
+      Array.from(content.children).forEach((node) => {
+        // Only import script modules
+        if (node.tagName == 'SCRIPT' && node.type == "module") {
+          import(node.src);
+        } else {
+          target.appendChild(node);
+        }
+      });
+
     });
   }
 
