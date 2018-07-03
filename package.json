@@ -1,6 +1,6 @@
 {
   "name": "ostinato-fetch",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Fetch html fragments",
   "author": "Andre Engelbrecht <andre@tehnode.co.uk>",
   "repository": {
@@ -10,7 +10,7 @@
   "license": "MIT",
   "flat": true,
   "dependencies": {
-    "@polymer/polymer": "^3.0.0-pre.13",
+    "@polymer/polymer": "^3.0.2",
     "npm": "^6.0.0"
   },
   "devDependencies": {
