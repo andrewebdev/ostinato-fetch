@@ -176,7 +176,10 @@ class OstinatoFetch extends PolymerElement {
       const targetSelectorList = this.targetSelectors.split(',');
       this._insertContent(doc, targetSelectorList);
       this.dispatchEvent(new CustomEvent('content-updated', {
-        detail: { doc: doc }
+        detail: {
+          doc: doc,
+          selectors: targetSelectorList
+        }
       }));
       this._updateHistoryState(doc);
     }
@@ -188,19 +191,10 @@ class OstinatoFetch extends PolymerElement {
       var target = document.querySelector(targetSelector);
 
       // First empty the target container properly
-      while (target.hasChildNodes()) { target.removeChild(target.lastChild); }
+      while (target.firstChild) { target.removeChild(target.firstChild); }
 
       // Now insert content elements
-      // If any immediate child elements is a script module, we will import it
-      Array.from(content.children).forEach((node) => {
-        // Only import script modules
-        if (node.tagName == 'SCRIPT' && node.type == "module") {
-          import(node.src);
-        } else {
-          target.appendChild(node);
-        }
-      });
-
+      Array.from(content.children).forEach(node => target.appendChild(node));
     });
   }
 
@@ -260,10 +254,11 @@ class OstinatoFetchTriggers extends PolymerElement {
     };
   }
 
-  ready() {
-    super.ready();
+  connectedCallback() {
+    super.connectedCallback();
 
     var triggerList = document.querySelectorAll(this.triggerSelector);
+
     if (triggerList) {
       triggerList.forEach((trigger) => {
         trigger.addEventListener('click', (ev) => {
