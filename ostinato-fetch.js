@@ -19,9 +19,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.  */
-import { PolymerElement } from '@polymer/polymer/polymer-element.js';
-import * as Async from '@polymer/polymer/lib/utils/async.js';
-import { Debouncer } from '@polymer/polymer/lib/utils/debounce.js';
+import { LitElement } from '@polymer/lit-element';
 
 
 class OstinatoFetchError extends Error {
@@ -40,7 +38,7 @@ class OstinatoFetchError extends Error {
 
 class InvalidOriginError extends OstinatoFetchError {
   constructor() {
-    super("Ostinato-fetch is not allowed to make requests to another origin.");
+    super('Ostinato-fetch is not allowed to make requests to another origin.');
   }
 }
 
@@ -53,7 +51,8 @@ class InvalidOriginError extends OstinatoFetchError {
 * @polymer
 * @demo demo/index.html
 */
-class OstinatoFetch extends PolymerElement {
+class OstinatoFetch extends LitElement {
+
   static get properties() {
     return {
       /**
@@ -67,41 +66,41 @@ class OstinatoFetch extends PolymerElement {
       /**
       * The http method to use for the request
       */
-      method: {
-        type: String,
-        value: 'get'
-      },
+      method: String,
 
       /**
       * The contenttype to use for the request
       */
-      contentType: {
-        type: String,
-        value: null
-      },
+      contentType: String,
 
       /**
       * Whether or not to update the browser history when this
       * component is used.
       */
-      updateHistory: {
-        type: Boolean,
-        value: false
-      },
+      updateHistory: Boolean,
 
       /**
         * If the requests being made is relative urls, then you need
         * to specify what baseURL the fetched urld are relative to
         */
-      baseUrl: {
-        type: String,
-        value: () => { return window.location.origin; }
-      }
+      baseUrl: String
     };
   }
 
-  ready() {
-    super.ready();
+  constructor() {
+    super();
+
+    this.targetSelectors = '';
+    this.method = 'get';
+    this.contentType = '';
+    this.updateHistory = false;
+    this.baseUrl = window.location.origin;
+
+    this._abortController = new AbortController();
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
 
     if (this.updateHistory) {
       // Set the initial history state route
@@ -143,36 +142,36 @@ class OstinatoFetch extends PolymerElement {
       delete _options.queryParams;
     }
 
-    this._fetchDebounce = Debouncer.debounce(
-      this._fetchDebounce,
-      Async.microTask, () => {
-        this._url = new URL(url, this.baseUrl);
+    this._url = new URL(url, this.baseUrl);
 
-        if (this._url.origin === window.location.origin) {
-          fetch(url, _options)
-            .then((resp) => {
-              this.dispatchEvent(new CustomEvent('request-completed', {
-                detail: { response: resp }
-              }));
-              return resp.text();
-            })
-            .then((text) => { this._updateContent(text); })
-            .catch((err) => {
-              this.dispatchEvent(new CustomEvent('error', {detail: err}));
-            });
-            this.dispatchEvent(new CustomEvent('request-started', {
-              detail: {requestUrl: this._url}
-            }))
-        } else {
-          throw new InvalidOriginError();
-        }
-      }
-    );
+    if (this._url.origin === window.location.origin) {
+      // Abort any exisiting request before we do anything else
+      this._abortController.abort();
+
+      let abortSignal = this._abortController.signal;
+      fetch(url, _options, {abortSignal})
+        .then((resp) => {
+          this.dispatchEvent(new CustomEvent('request-completed', {
+            detail: { response: resp }
+          }));
+          return resp.text();
+        })
+        .then((text) => { this._updateContent(text); })
+        .catch((err) => {
+          this.dispatchEvent(new CustomEvent('error', {detail: err}));
+        });
+
+      this.dispatchEvent(new CustomEvent('request-started', {
+        detail: {requestUrl: this._url}
+      }));
+    } else {
+      throw new InvalidOriginError();
+    }
   }
 
   _updateContent(content) {
     if (content) {
-      const doc = new DOMParser().parseFromString(content, "text/html");
+      const doc = new DOMParser().parseFromString(content, 'text/html');
       const targetSelectorList = this.targetSelectors.split(',');
       this._insertContent(doc, targetSelectorList);
       this.dispatchEvent(new CustomEvent('content-updated', {
@@ -235,38 +234,49 @@ customElements.define('ostinato-fetch', OstinatoFetch);
  * Use this element to specify which elements should behave as ostinato-fetch
  * triggers.
  */
-class OstinatoFetchTriggers extends PolymerElement {
+class OstinatoFetchTriggers extends LitElement {
   static get properties() {
     return {
       /**
         * The query selector for the `ostinato-fetch` element to use when
         * making the request.
         */
-      xhrSelector: {
-        type: String,
-        value: "#xhrContent"
-      },
+      xhrSelector: { type: String },
 
-      triggerSelector: {
-        type: String,
-        value: "[xhr-link]"
-      }
+      /**
+      * Elements with the trigger selector will have their click event
+      * intercepted and will make the request via ostinato-fetch
+      */
+      triggerSelector: { type: String },
     };
+  }
+
+
+  constructor() {
+    super();
+    this.xhrSelector = '#xhrContent';
+    this.triggerSelector = '[xhr-link]';
   }
 
   connectedCallback() {
     super.connectedCallback();
-
     var triggerList = document.querySelectorAll(this.triggerSelector);
+    triggerList.forEach((trigger) => {
+      trigger.addEventListener('click', this._handleXhrClick.bind(this));
+    });
+  }
 
-    if (triggerList) {
-      triggerList.forEach((trigger) => {
-        trigger.addEventListener('click', (ev) => {
-          ev.preventDefault();
-          this.triggerRequest(ev.currentTarget.href);
-        });
-      });
-    }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    var triggerList = document.querySelectorAll(this.triggerSelector);
+    triggerList.forEach((trigger) => {
+      trigger.removeEventListener('click', this._handleXhrClick.bind(this));
+    });
+  }
+
+  _handleXhrClick(ev) {
+    ev.preventDefault();
+    this.triggerRequest(ev.currentTarget.href);
   }
 
   triggerRequest(href) {
