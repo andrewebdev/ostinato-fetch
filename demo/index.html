@@ -6,9 +6,75 @@
 
   <title>ostinato-fetch demo</title>
 
-  <script type="module" src="../../@polymer/iron-demo-helpers/demo-pages-shared-styles.js"></script>
-  <script type="module" src="../../@polymer/iron-demo-helpers/demo-snippet.js"></script>
   <script type="module" src="../ostinato-fetch.js"></script>
+
+  <script type="module">
+    import { LitElement, html, css } from 'lit-element';
+
+    class DemoSnippet extends LitElement {
+
+      static get styles() {
+        return [
+          css`
+            :host {
+              position: relative;
+              overflow: hidden;
+            }
+
+            :host > div, #code {
+              padding: 1em;
+            }
+
+            #code {
+              display: block;
+              margin: 0;
+              padding: 0 1em 1em;
+              color: #cd0a00;
+              background-color: #fafafa;
+              border-top: 2px dotted #e3e3e3;
+              overflow: auto;
+            }
+          `,
+        ];
+      }
+
+      render() {
+        return html`
+          <div>
+            <slot></slot>
+          </div>
+
+          <xmp id="code"></xmp>
+        `;
+      }
+
+      firstUpdated() {
+        super.firstUpdated();
+        let code = this.innerHTML;
+        this.shadowRoot.getElementById('code').innerHTML = this._unindent(this.innerHTML);
+      }
+
+      _unindent(text) {
+        if (!text)
+          return text;
+        var lines = text.replace(/\t/g, '  ').split('\n');
+        var indent = lines.reduce(function(prev, line) {
+          if (/^\s*$/.test(line))
+            return prev;  // Completely ignore blank lines.
+
+          var lineIndent = line.match(/^(\s*)/)[0].length;
+          if (prev === null)
+            return lineIndent;
+          return lineIndent < prev ? lineIndent : prev;
+        }, null);
+
+        return lines.map(function(l) {
+          return l.substr(indent);
+        }).join('\n');
+      }
+    }
+    customElements.define('demo-snippet', DemoSnippet);
+  </script>
 
   <custom-style>
     <style is="custom-style" include="demo-pages-shared-styles">
@@ -32,68 +98,66 @@
     <code>ostinato-xhr</code> element.</p>
 
     <demo-snippet>
-      <template>
-        <button onclick="loadContent()">Load Content manually (view1.html)</button>
+      <button onclick="loadContent()">Load Content manually (view1.html)</button>
 
-        <hr>
+      <hr>
 
-        <a href="view1.html" xhr-link>Load view 1</a>
-        <a href="view2.html" xhr-link>Load view 2</a>
-        <a href="view3.html" xhr-link>Load view 3</a>
+      <a href="view1.html" xhr-link>Load view 1</a>
+      <a href="view2.html" xhr-link>Load view 2</a>
+      <a href="view3.html" xhr-link>Load view 3</a>
 
-        <a href="doesnotexist.html" xhr-link>Load non-existing</a>
+      <a href="doesnotexist.html" xhr-link>Load non-existing</a>
 
-        <hr>
+      <hr>
 
-        <ostinato-fetch
-          id="xhr"
-          target-selectors="#content"
-          update-history>
-        </ostinato-fetch>
+      <ostinato-fetch
+        id="xhr"
+        targetSelectors="#content"
+        updateHistory>
+      </ostinato-fetch>
 
-        <div id="content">
-          <!-- content gets inserted here -->
-        </div>
+      <div id="content">
+        <!-- content gets inserted here -->
+      </div>
 
-        <ostinato-fetch-triggers
-          id="basicTriggers"
-          xhr-selector="#xhr">
-        </ostinato-fetch-triggers>
+      <ostinato-fetch-triggers
+        id="basicTriggers"
+        xhrSelector="#xhr">
+      </ostinato-fetch-triggers>
 
-        <script>
-          (function() {
-            var xhr = document.querySelector('#xhr');
+      <script>
+        (function() {
+          var xhr = document.querySelector('#xhr');
 
-            // Example of how events can be used to show loading
-            // notifications etc.
-            xhr.addEventListener('request-started', (ev) => {
-              document.querySelector('#content').innerHTML = 'LOADING...';
-              console.log('request started...');
-              console.log(ev.detail);
-            });
+          // Example of how events can be used to show loading
+          // notifications etc.
+          xhr.addEventListener('request-started', (ev) => {
+            document.querySelector('#content').innerHTML = 'LOADING...';
+            console.log('request started...');
+            console.log(ev.detail);
+          });
 
-            xhr.addEventListener('request-completed', (ev) => {
-              console.log('request completed...');
-              console.log(ev.detail);
-            });
+          xhr.addEventListener('request-completed', (ev) => {
+            console.log('request completed...');
+            console.log(ev.detail);
+          });
 
-            xhr.addEventListener('content-updated', (ev) => {
-              console.log('content updated...');
-              console.log(ev.detail);
-            });
+          xhr.addEventListener('content-updated', (ev) => {
+            console.log('content updated...');
+            console.log(ev.detail);
+          });
 
-            xhr.addEventListener('history-updated', (ev) => {
-              console.log('History updated...');
-              console.log(ev.detail);
-            });
+          xhr.addEventListener('history-updated', (ev) => {
+            console.log('History updated...');
+            console.log(ev.detail);
+          });
 
-            xhr.addEventListener('error', function(ev) {
-              console.log('error...');
-              console.log(ev.detail);
-            });
-          })();
-        </script>
-      </template>
+          xhr.addEventListener('error', function(ev) {
+            console.log('error...');
+            console.log(ev.detail);
+          });
+        })();
+      </script>
     </demo-snippet>
   </div>
 
@@ -104,32 +168,31 @@
     that we specify. In this case it's just a header and content</p>
 
     <demo-snippet>
-      <template>
-        <a href="multiview.html" xhr-multi>Load content</a>
+      <a href="multiview.html" xhr-multi>Load content</a>
 
-        <ostinato-fetch
-          id="xhrMultiple"
-          target-selectors="#multiHeader,#multiContent">
-        </ostinato-fetch>
-
-        <div id="multiple">
-          <div id="multiHeader">
-            <p>This is a header container</p>
-          </div>
-
-          <p style="font-weight: bold; color: red;">Some content that should not be updated.</p>
-
-          <div id="multiContent">
-            <p>This is a content container</p>
-          </div>
+      <div id="multiple">
+        <div id="multiHeader">
+          <p>This is a header container</p>
         </div>
 
-        <ostinato-fetch-triggers
-          id="multiTriggers"
-          xhr-selector="#xhrMultiple"
-          trigger-selector="[xhr-multi]">
-        </ostinato-fetch-triggers>
-      </template>
+        <p style="font-weight: bold; color: red;">Some content that should not be updated.</p>
+
+        <div id="multiContent">
+          <p>This is a content container</p>
+        </div>
+      </div>
+
+      <ostinato-fetch
+        id="xhrMultiple"
+        targetSelectors="#multiHeader,#multiContent">
+      </ostinato-fetch>
+
+      <ostinato-fetch-triggers
+        id="multiTriggers"
+        xhrSelector="#xhrMultiple"
+        triggerSelector="[xhr-multi]">
+      </ostinato-fetch-triggers>
+
     </demo-snippet>
   </div>
 </body>

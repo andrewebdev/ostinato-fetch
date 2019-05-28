@@ -19,7 +19,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.  */
-import { LitElement } from '@polymer/lit-element';
+import { LitElement } from 'lit-element';
 
 
 class OstinatoFetchError extends Error {
@@ -77,7 +77,10 @@ class OstinatoFetch extends LitElement {
       * Whether or not to update the browser history when this
       * component is used.
       */
-      updateHistory: Boolean,
+      updateHistory: {
+        type: Boolean,
+        reflect: true
+      },
 
       /**
         * If the requests being made is relative urls, then you need
@@ -99,8 +102,8 @@ class OstinatoFetch extends LitElement {
     this._abortController = new AbortController();
   }
 
-  connectedCallback() {
-    super.connectedCallback();
+  firstUpdated() {
+    super.firstUpdated();
 
     if (this.updateHistory) {
       // Set the initial history state route
