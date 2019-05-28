@@ -260,18 +260,21 @@ class OstinatoFetchTriggers extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    var triggerList = document.querySelectorAll(this.triggerSelector);
-    triggerList.forEach((trigger) => {
-      trigger.addEventListener('click', this._handleXhrClick.bind(this));
-    });
+    this.listener = this._handleXhrClick.bind(this);
+    document
+      .querySelectorAll(this.triggerSelector)
+      .forEach((trigger) => {
+        trigger.addEventListener('click', this.listener);
+      });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    var triggerList = document.querySelectorAll(this.triggerSelector);
-    triggerList.forEach((trigger) => {
-      trigger.removeEventListener('click', this._handleXhrClick.bind(this));
-    });
+    document
+      .querySelectorAll(this.triggerSelector)
+      .forEach((trigger) => {
+        trigger.removeEventListener('click', this.listener);
+      });
   }
 
   _handleXhrClick(ev) {
