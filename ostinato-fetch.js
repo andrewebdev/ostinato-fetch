@@ -22,7 +22,7 @@ SOFTWARE.  */
 import { LitElement } from 'lit-element';
 
 
-class OstinatoFetchError extends Error {
+export class OstinatoFetchError extends Error {
   constructor(message) {
     super(message);
     this.name = this.constructor.name;
@@ -36,7 +36,7 @@ class OstinatoFetchError extends Error {
 }
 
 
-class InvalidOriginError extends OstinatoFetchError {
+export class InvalidOriginError extends OstinatoFetchError {
   constructor() {
     super('Ostinato-fetch is not allowed to make requests to another origin.');
   }
@@ -51,7 +51,7 @@ class InvalidOriginError extends OstinatoFetchError {
 * @polymer
 * @demo demo/index.html
 */
-class OstinatoFetch extends LitElement {
+export class OstinatoFetch extends LitElement {
 
   static get properties() {
     return {
@@ -237,7 +237,7 @@ customElements.define('ostinato-fetch', OstinatoFetch);
  * Use this element to specify which elements should behave as ostinato-fetch
  * triggers.
  */
-class OstinatoFetchTriggers extends LitElement {
+export class OstinatoFetchTriggers extends LitElement {
   static get properties() {
     return {
       /**
