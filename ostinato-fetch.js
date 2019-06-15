@@ -282,7 +282,7 @@ export class OstinatoFetchTriggers extends LitElement {
 
   _handleXhrClick(ev) {
     ev.preventDefault();
-    this.triggerRequest(ev.currentTarget.href);
+    this.triggerRequest(ev.currentTarget.getAttribute('href'));
   }
 
   triggerRequest(href) {
