@@ -229,8 +229,6 @@ export class OstinatoFetch extends LitElement {
   }
 }
 
-customElements.define('ostinato-fetch', OstinatoFetch);
-
 
 /**
  * `ostinato-fetch-triggers`
@@ -289,5 +287,3 @@ export class OstinatoFetchTriggers extends LitElement {
     document.querySelector(this.xhrSelector).fetch(href);
   }
 }
-
-customElements.define('ostinato-fetch-triggers', OstinatoFetchTriggers);

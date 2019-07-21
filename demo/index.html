@@ -10,6 +10,7 @@
 
   <script type="module">
     import { LitElement, html, css } from 'lit-element';
+    import { OstinatoFetch, OstinatoFetchTriggers } from '../ostinato-fetch.js';
 
     class DemoSnippet extends LitElement {
 
@@ -73,7 +74,10 @@
         }).join('\n');
       }
     }
+
     customElements.define('demo-snippet', DemoSnippet);
+    customElements.define('ostinato-fetch', OstinatoFetch);
+    customElements.define('ostinato-fetch-triggers', OstinatoFetchTriggers);
   </script>
 
   <custom-style>
@@ -102,9 +106,9 @@
 
       <hr>
 
-      <a href="view1.html" xhr-link>Load view 1</a>
-      <a href="view2.html" xhr-link>Load view 2</a>
-      <a href="view3.html" xhr-link>Load view 3</a>
+      <a href="/components/ostinato-fetch/demo/view1.html" xhr-link>Load view 1</a>
+      <a href="/components/ostinato-fetch/demo/view2.html" xhr-link>Load view 2</a>
+      <a href="/components/ostinato-fetch/demo/view3.html" xhr-link>Load view 3</a>
 
       <a href="doesnotexist.html" xhr-link>Load non-existing</a>
 
@@ -168,7 +172,7 @@
     that we specify. In this case it's just a header and content</p>
 
     <demo-snippet>
-      <a href="multiview.html" xhr-multi>Load content</a>
+      <a href="/components/ostinato-fetch/demo/multiview.html" xhr-multi>Load content</a>
 
       <div id="multiple">
         <div id="multiHeader">
