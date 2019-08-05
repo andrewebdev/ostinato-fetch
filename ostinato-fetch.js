@@ -131,8 +131,13 @@ export class OstinatoFetch extends LitElement {
     * Make a request using the fetch api instead of XMLHttpRequest
     */
   fetch(url, options) {
+    var _headers = new Headers({
+      'fetch-fragments': this.targetSelectors,
+    });
+
     var _options = Object.assign({
       method: this.method,
+      headers: _headers,
       redirect: 'follow',
       credentials: 'same-origin',
     }, options);
