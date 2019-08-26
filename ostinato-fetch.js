@@ -197,6 +197,10 @@ export class OstinatoFetch extends LitElement {
       var content = doc.querySelector(targetSelector);
       var target = document.querySelector(targetSelector);
 
+      if (!target || !content) {
+        console.log(`Fragment, ${targetSelector}, cannot be found.`);
+      }
+
       // First empty the target container properly
       while (target.firstChild) { target.removeChild(target.firstChild); }
 
