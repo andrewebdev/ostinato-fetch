@@ -56,27 +56,27 @@ export class OstinatoFetch extends LitElement {
   static get properties() {
     return {
       /**
-      * A comma separated list of target element selectors which
-      * should receive the new content.
-      * If these nodes exist in the response content, then it will
-      * be extracted directly from the response.
-      */
+       * A comma separated list of target element selectors which
+       * should receive the new content.
+       * If these nodes exist in the response content, then it will
+       * be extracted directly from the response.
+       */
       targetSelectors: String,
 
       /**
-      * The http method to use for the request
-      */
+       * The http method to use for the request
+       */
       method: String,
 
       /**
-      * The contenttype to use for the request
-      */
+       * The contenttype to use for the request
+       */
       contentType: String,
 
       /**
-      * Whether or not to update the browser history when this
-      * component is used.
-      */
+       * Whether or not to update the browser history when this
+       * component is used.
+       */
       updateHistory: {
         type: Boolean,
         reflect: true
@@ -86,7 +86,17 @@ export class OstinatoFetch extends LitElement {
         * If the requests being made is relative urls, then you need
         * to specify what baseURL the fetched urld are relative to
         */
-      baseUrl: String
+      baseUrl: String,
+
+      /**
+       * by default the rootEl will be the document Node. This can
+       * be overridden to use a different node. All queries will be made from
+       * that node down.
+       *
+       * This is handy when you want to make your fetch requests etc. in the
+       * shadowRoot of a custom webcomponent for example.
+       */
+      rootEl: Object,
     };
   }
 
@@ -98,6 +108,7 @@ export class OstinatoFetch extends LitElement {
     this.contentType = '';
     this.updateHistory = false;
     this.baseUrl = window.location.origin;
+    this.rootEl = document;
 
     this._abortController = new AbortController();
   }
@@ -195,7 +206,7 @@ export class OstinatoFetch extends LitElement {
   _insertContent(doc, targetSelectorList) {
     targetSelectorList.forEach((targetSelector) => {
       var content = doc.querySelector(targetSelector);
-      var target = document.querySelector(targetSelector);
+      var target = this.rootEl.querySelector(targetSelector);
 
       if (!target || !content) {
         console.log(`Fragment, ${targetSelector}, cannot be found.`);
@@ -258,6 +269,8 @@ export class OstinatoFetchTriggers extends LitElement {
       * intercepted and will make the request via ostinato-fetch
       */
       triggerSelector: { type: String },
+
+      rootEl: { type: Object },
     };
   }
 
@@ -266,12 +279,13 @@ export class OstinatoFetchTriggers extends LitElement {
     super();
     this.xhrSelector = '#xhrContent';
     this.triggerSelector = '[xhr-link]';
+    this.rootEl = document;
   }
 
   connectedCallback() {
     super.connectedCallback();
     this.listener = this._handleXhrClick.bind(this);
-    document
+    rootEl
       .querySelectorAll(this.triggerSelector)
       .forEach((trigger) => {
         trigger.addEventListener('click', this.listener);
@@ -280,7 +294,7 @@ export class OstinatoFetchTriggers extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    document
+    rootEl
       .querySelectorAll(this.triggerSelector)
       .forEach((trigger) => {
         trigger.removeEventListener('click', this.listener);
@@ -293,6 +307,6 @@ export class OstinatoFetchTriggers extends LitElement {
   }
 
   triggerRequest(href) {
-    document.querySelector(this.xhrSelector).fetch(href);
+    rootEl.querySelector(this.xhrSelector).fetch(href);
   }
 }
