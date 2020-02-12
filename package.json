@@ -1,6 +1,6 @@
 {
   "name": "ostinato-fetch",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "Fetch html fragments",
   "author": "Andre Engelbrecht <andre@tehnode.co.uk>",
   "repository": {
