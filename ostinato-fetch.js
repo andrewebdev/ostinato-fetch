@@ -289,7 +289,7 @@ export class OstinatoFetchTriggers extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     this.listener = this._handleXhrClick.bind(this);
-    rootEl
+    this.rootEl
       .querySelectorAll(this.triggerSelector)
       .forEach((trigger) => {
         trigger.addEventListener('click', this.listener);
@@ -298,7 +298,7 @@ export class OstinatoFetchTriggers extends LitElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    rootEl
+    this.rootEl
       .querySelectorAll(this.triggerSelector)
       .forEach((trigger) => {
         trigger.removeEventListener('click', this.listener);
@@ -311,6 +311,6 @@ export class OstinatoFetchTriggers extends LitElement {
   }
 
   triggerRequest(href) {
-    rootEl.querySelector(this.xhrSelector).fetch(href);
+    this.rootEl.querySelector(this.xhrSelector).fetch(href);
   }
 }
