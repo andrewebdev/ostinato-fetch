@@ -217,6 +217,10 @@ export class OstinatoFetch extends LitElement {
 
       // Now insert content elements
       Array.from(content.children).forEach(node => target.appendChild(node));
+
+      // Finally also update classes on the container
+      target.className = "";
+      target.classList.add(...content.classList);
     });
   }
 
