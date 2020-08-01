@@ -1,6 +1,6 @@
 /**
 @licence
-Copyright (c) 2018 Tehnode Ltd.
+Copyright (c) 2018-2020 Tehnode Ltd.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -311,6 +311,13 @@ export class OstinatoFetchTriggers extends LitElement {
   }
 
   triggerRequest(href) {
-    this.rootEl.querySelector(this.xhrSelector).fetch(href);
+    // If the url is off-site, then do a traditional page request
+    var xhr = this.rootEl.querySelector(this.xhrSelector);
+    var _url = new URL(href, xhr.baseUrl);
+    if (_url.origin !== window.location.origin) {
+      window.open(href);
+    } else {
+      xhr.fetch(href)
+    }
   }
 }
