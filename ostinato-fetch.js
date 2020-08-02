@@ -216,7 +216,12 @@ export class OstinatoFetch extends LitElement {
       while (target.firstChild) { target.removeChild(target.firstChild); }
 
       // Now insert content elements
-      Array.from(content.children).forEach(node => target.appendChild(node));
+      if (content.children.length === 0) {
+        // There are no child elements; Just insert the content as-is
+        target.innerHTML = content.innerHTML;
+      } else {
+        Array.from(content.children).forEach(node => target.appendChild(node));
+      }
 
       // Finally also update classes on the container
       target.className = "";
